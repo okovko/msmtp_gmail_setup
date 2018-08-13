@@ -41,9 +41,9 @@ fi
 
 if [ "$os" == "darwin" ]
 then
-	sudo brew install mailutils
-	sudo brew install msmtp
-	echo "set sendmail=/usr/bin/msmtp" | sudo tee -a /etc/mail.rc
+	brew install mailutils
+	brew install msmtp
+	echo "set sendmail=/usr/local/bin/msmtp" | sudo tee -a /etc/mail.rc
 fi
 
 echo "defaults
@@ -55,9 +55,9 @@ then
 	echo "tls_trust_file /etc/ssl/certs/ca-certificates.crt" >> ~/.msmtprc
 elif [ "$os" == "darwin" ]
 then
-	{ echo -n "tls_fingerprint" &
+	{ echo -n "tls_fingerprint " &
 	  msmtp --serverinfo --tls --tls-certcheck=off --host=smtp.gmail.com --port=587 \
-	  | grep -Po "([0-9A-Za-z]{2}:){31}[0-9A-Za-z]{2}" ;
+	  | egrep -o "([0-9A-Za-z]{2}:){31}[0-9A-Za-z]{2}" ;
 	} >> ~/.msmtprc
 fi
 
@@ -65,14 +65,14 @@ echo "logfile ~/.msmtp.log
 account gmail
 host smtp.gmail.com
 port 587
-from $EMAIL
-user $USERNAME 
-password $PASSWORD
+from $EMAIL_
+user $USERNAME_
+password $PASSWORD_
 account default: gmail" >> ~/.msmtprc
 
 echo "export MAIL_SERVER = smtp.gmail.com
 export MAIL_PORT = 587
 export MAIL_USE_TLS = True
 export MAIL_USE_SSL = False
-export MAIL_USERNAME = $EMAIL
-export MAIL_PASSWORD = $PASSWORD" >> ~/.$(basename $SHELL)rc
+export MAIL_USERNAME = $EMAIL_
+export MAIL_PASSWORD = $PASSWORD_" >> ~/.$(basename $SHELL)rc
