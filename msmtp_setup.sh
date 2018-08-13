@@ -13,17 +13,26 @@ os=""
 if uname -a | grep -iq "darwin"
 then
 	os="darwin"
-elif uname -a | grep -iq "ubuntu"
+elif uname -a | grep -iq "linux"
 then
-	os="ubuntu"
+	os="linux"
 fi
 
 if [ "$os" == "" ]
 then
+	echo "This script expects darwin or linux."
+	exit 1
+elif [ "$os" == "darwin" ] && which brew | grep -c "not found"
+then
+	echo "Can't find brew installation; make brew command visible or install homebrew and try again"
+	exit 1
+elif [ "$os" == "linux" ] && ! dpkg -s apt | grep -c "install ok installed"
+then
+	echo "apt is not installed; install apt and try again"
 	exit 1
 fi
 
-if [ "$os" == "ubuntu" ]
+if [ "$os" == "linux" ]
 then
 	sudo apt-get install mailutils
 	sudo apt-get install msmtp
@@ -41,14 +50,14 @@ echo "defaults
 auth on
 tls on" >> ~/.msmtprc
 
-if [ "$os" == "ubuntu" ]
+if [ "$os" == "linux" ]
 then
 	echo "tls_trust_file /etc/ssl/certs/ca-certificates.crt" >> ~/.msmtprc
 elif [ "$os" == "darwin" ]
 then
 	{ echo -n "tls_fingerprint" &
 	  msmtp --serverinfo --tls --tls-certcheck=off --host=smtp.gmail.com --port=587 \
-	  | grep -e "SHA256" | tr -s ' ' | cut -c10- ;
+	  | grep -Po "([0-9A-Za-z]{2}:){31}[0-9A-Za-z]{2}" ;
 	} >> ~/.msmtprc
 fi
 
