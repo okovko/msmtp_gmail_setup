@@ -10,7 +10,7 @@ Click "Signing into Google"
 
 Click "App passwords"
 
-Select "Mail" and "other", maybe name it "msmtp-device-name"
+Select "Mail" and "other", maybe name it "msmtp"
 
 Generate the msmtp password and save it somewhere
 
